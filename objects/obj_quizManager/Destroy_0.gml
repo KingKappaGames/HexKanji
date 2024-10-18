@@ -1,0 +1,1 @@
+global.movementLocked = 0;
