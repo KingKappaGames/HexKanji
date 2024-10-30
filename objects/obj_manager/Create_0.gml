@@ -2,6 +2,7 @@ randomize();
 
 global.manager = id;
 global.movementLocked = 0;
+displayGalleryMode = false; // no quizes and shows the meaning and romaji on the tile by default
 
 x = 2100;
 y = 2100;
@@ -40,7 +41,7 @@ debugData = [0, 0, 0, 0, 0, 0];
 goalX = x;
 goalY = y;
 moving = 0;
-moveSpeed = 3;
+moveSpeed = 7;
 
 updateSurfaceNextFrame = 1;
 
@@ -74,12 +75,15 @@ setTileGrid = function(tileSet, sorting, clumping, mapWidth, mapHeight, tileWidt
 		for(var _y = 0; _y < mapHeight; _y++) {
 			var _wordIndex = irandom(totalWordCount - 1);
 			var _filterValue = 1;
-			with(obj_filter) {
+			/*with(obj_filter) {
 				var _dist = point_distance(tileX, tileY, _x, _y) / tileRadius;
 				_filterValue *= other.totalWordCollectionArray[_wordIndex][4] / 7;
 				if(_filterValue < 1 - _dist) { // fail condition
 					//reset tile attempt... there must be a better way to get tile values like this than just randomly grabbing until it fufills all options...
 				}
+			}*/
+			while(totalWordCollectionArray[_wordIndex][4] > 2) {
+				_wordIndex = irandom(totalWordCount - 1);
 			}
 			tiles[_x, _y] = getWordData(_wordIndex); // tile get from style of request
 		}
@@ -111,6 +115,11 @@ drawLocalSurface = function() {
 					var _col = make_color_rgb(0, irandom(128), irandom_range(128, 255));//choose(c_red, c_blue, c_green, c_purple, c_orange);
 					draw_rectangle_color(_x * tileGapHorizontal - _xCut - x % tileGapHorizontal, _y * tileGapVertical - _yCut - y % tileGapVertical, _x * tileGapHorizontal - _xCut + tileGapHorizontal - x % tileGapHorizontal, _y * tileGapVertical - _yCut + tileGapVertical - y % tileGapVertical, _col, _col, _col, _col, false);
 					draw_text_transformed((_x + .5) * tileGapHorizontal - _xCut - x % tileGapHorizontal, _y * tileGapVertical + tileGapVertical / 2 - _yCut - y % tileGapVertical, tiles[_x][_y][0], clamp(3 / string_length(tiles[_x][_y][0]), .3, .75), clamp(4 / string_length(tiles[_x][_y][0]), .3, .75), 0);
+					if(displayGalleryMode) {
+						draw_text_transformed((_x + .5) * tileGapHorizontal - _xCut - x % tileGapHorizontal, _y * tileGapVertical + tileGapVertical / 2 - _yCut - y % tileGapVertical - tileGapVertical * .3, tiles[_x][_y][1][0], clamp(2 / string_length(tiles[_x][_y][3][0]), .3, .75), clamp(3 / string_length(tiles[_x][_y][3][0]), .3, .75), 0);
+						draw_text_transformed((_x + .5) * tileGapHorizontal - _xCut - x % tileGapHorizontal, _y * tileGapVertical + tileGapVertical / 2 - _yCut - y % tileGapVertical + tileGapVertical * .3, tiles[_x][_y][3][0], clamp(2 / string_length(tiles[_x][_y][3][0]), .3, .75), clamp(3 / string_length(tiles[_x][_y][3][0]), .3, .75), 0);
+					}
+					
 					//draw_text_transformed((_x + .5) * tileGapHorizontal - _xCut - x % tileGapHorizontal, _y * tileGapVertical + tileGapVertical / 2 - _yCut - y % tileGapVertical, tiles[_x][_y][3][0], clamp(3 / string_length(tiles[_x][_y][3][0]), .3, .75), clamp(4 / string_length(tiles[_x][_y][3][0]), .3, .75), 0);
 				} else {
 					var _col = make_color_rgb(127 + irandom(64), irandom(128) + 127, irandom_range(128, 255));//choose(c_red, c_blue, c_green, c_purple, c_orange);
@@ -160,7 +169,7 @@ startTileQuiz = function() {
 	var _tileY = round(y / tileGapVertical);
 	
 	var _quiz = instance_create_depth(_tileX * tileGapHorizontal, _tileY * tileGapVertical, -100, obj_quizManager); // maybe these should both be made into made quiz () ? idk
-	_quiz.initializeQuiz(_tileX, _tileY, ["symbol"], [choose("romaji", "meaning"), "meaningWheel", "romajiWheel", "pronunciationWheel"], 3 + irandom(5), 0);
+	_quiz.initializeQuiz(_tileX, _tileY, ["symbol"], ["meaningWheel", "romajiWheel", "pronunciationWheel"], 3 + irandom(5), 0);
 }
 
 startTileInfoScreen = function() {
@@ -287,7 +296,7 @@ closeFile = function(fileId) {
 
 //addWordSet("baseWords.txt");
 //addWordSet("terrariaWords.txt");
-addWordSet("kanjiDump.TXT");
+addWordSet("theGovSet.TXT");
 
 loadAllWordsFromFileToDataCollection();
 

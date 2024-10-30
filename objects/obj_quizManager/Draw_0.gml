@@ -16,7 +16,7 @@ if(guessCurrentFormat != 0) {
 			draw_text_transformed(x + dcos(_i * (360 / guessOptionCount) + _offset) * tileSize * 1.02, y - 10 - dsin(_i * (360 / guessOptionCount) + _offset) * tileSize * 1.02, guessList[_i], .75, .75, 0);
 		} else {
 			var _width = string_width(guessList[_i]);
-			draw_text_transformed(x + dcos(_i * (360 / guessOptionCount) + _offset) * tileSize * 1.02, y - 10 - dsin(_i * (360 / guessOptionCount) + _offset) * tileSize * 1.02, guessList[_i], 110 / _width, 100 / _width + .1, 0);
+			draw_text_transformed(x + dcos(_i * (360 / guessOptionCount) + _offset) * tileSize * 1.02, y - 10 - dsin(_i * (360 / guessOptionCount) + _offset) * tileSize * 1.02, guessList[_i], clamp(110 / _width, .22, 99), clamp(100 / _width + .1, .32, 99), 0);
 		}
 		draw_set_color(c_white);
 	}

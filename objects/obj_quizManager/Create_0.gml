@@ -34,8 +34,17 @@ entryString = "";
 parseEntry = function(valueCheckAgainst) {
 	if(entryString != "") {
 		// do the logic here
+		entryString = string_letters(entryString); // remove non alphabet characters
 		if(valueCheckAgainst == "romaji") {
-			if(array_contains(romaji, entryString)) {
+			var _contains = false;
+			for(var _i = array_length(romaji) - 1; _i >= 0; _i--) {
+				if(string_letters(romaji[_i]) == entryString) { // check a letter stripped romaji answer vs letter stipped guess input
+					_contains = true;
+					break;
+				}
+			}
+				
+			if(_contains) {
 				entryString = ""; // option for clearing right answers
 				array_delete(guessFormatAnswer, array_get_index(guessFormatAnswer, "romaji"), 1);
 				audio_play_sound(snd_correctDing, 0, 0);
@@ -47,7 +56,15 @@ parseEntry = function(valueCheckAgainst) {
 				return false;
 			}
 		} else if(valueCheckAgainst == "meaning") {
-			if(array_contains(meaning, entryString)) {
+			var _contains = false;
+			for(var _i = array_length(meaning) - 1; _i >= 0; _i--) {
+				if(string_letters(meaning[_i]) == entryString) { // check a letter stripped meaning answer vs letter stipped guess input
+					_contains = true;
+					break;
+				}
+			}
+			
+			if(_contains) {
 				entryString = ""; // option for clearing right answers
 				array_delete(guessFormatAnswer, array_get_index(guessFormatAnswer, "meaning"), 1);
 				audio_play_sound(snd_correctDing, 0, 0);

@@ -77,6 +77,7 @@ show_debug_message(array_length(_kunRomajiReading))
 
 var _debug = file_exists("kanjiDump.TXT");
 var _kanjiCount = array_length(_kanji);
+
 for(var _i = 0; _i < _kanjiCount; _i++) {
 	
 	var _string = "\""; // initial string opener
@@ -108,21 +109,43 @@ for(var _i = 0; _i < _kanjiCount; _i++) {
 	}
 	_stringHir += "\""; // close string chain at end
 	
-	var _stringOn = "\""; // initial string opener
+	var _stringOn = "";
+	if(_onRomajiReading[_i] != "-") {
+		_stringOn = "\"*"; // initial string opener and opening * marker for on reading
 	
-	_charCount = string_length(_onRomajiReading[_i]);
-	for(var _letter = 1; _letter <= _charCount; _letter++) {
-		_letterHold = string_char_at(_onRomajiReading[_i], _letter);
-		if(_letterHold == ",") {
-			_stringOn += "\" \""; // replace delimeters with string breaks
-			_letter++; // skip extra space that comes after all commas, periods, and semicolons... right? There's a space after all of them right? Right??
-		} else {
-			_stringOn += _letterHold; // continue string...
+		_charCount = string_length(_onRomajiReading[_i]);
+		for(var _letter = 1; _letter <= _charCount; _letter++) {
+			_letterHold = string_char_at(_onRomajiReading[_i], _letter);
+			if(_letterHold == ",") {
+				_stringOn += "\" \"*"
+				; // replace delimeters with string breaks (plus leading * marker)
+				_letter++; // skip extra space that comes after all commas, periods, and semicolons... right? There's a space after all of them right? Right??
+			} else {
+				_stringOn += _letterHold; // continue string...
+			}
 		}
+		_stringOn += "\""; // close string chain at end
 	}
-	_stringOn += "\""; // close string chain at end
 	
-	var _dataText = $"{_kanji[_i]} [ {_stringOn} ] [ {_stringHir} ] [ {_string} ] {_gradeLevel[_i]} \"There is no description for this!\"";
+	var _stringKun = ""; // initial non entry
+	if(_kunRomajiReading[_i] != "-") {
+		 _stringKun = "\""; // initial string opener
+		_charCount = string_length(_kunRomajiReading[_i]);
+		for(var _letter = 1; _letter <= _charCount; _letter++) {
+			_letterHold = string_char_at(_kunRomajiReading[_i], _letter);
+			if(_letterHold == ",") {
+				_stringKun += "\" \""; // replace delimeters with string breaks
+				_letter++; // skip extra space that comes after all commas, periods, and semicolons... right? There's a space after all of them right? Right??
+			} else {
+				_stringKun += _letterHold; // continue string...
+			}
+		}
+		_stringKun += "\""; // close string chain at end
+	}
+	
+	var _onString = $" {_stringOn}"; // adds the collection with space built in so that if it's null it wont create empty space groups... Not ideal but who cares it works
+	
+	var _dataText = $"{_kanji[_i]} [ {_stringKun}{_onString} ] [ {_stringHir} ] [ {_string} ] {_gradeLevel[_i]} \"There is no description for this!\"";
 	file_text_write_string(_wordDump, _dataText); // write data to file
 	file_text_writeln(_wordDump);
 }

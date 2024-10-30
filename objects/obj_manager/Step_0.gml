@@ -20,7 +20,9 @@ if(moving == 1) {
 	y = lerp(y, goalY, moveSpeed / 100);
 	if(point_distance(x, y, goalX, goalY) < moveSpeed + 3) {
 		moving = 0; // leave the player offset a bit, kinda fun maybe?
-		startTileQuiz();
+		if(!displayGalleryMode) {
+			startTileQuiz();
+		}
 		surfaceDrawX = x;
 		surfaceDrawY = y;
 		updateSurfaceNextFrame = 1;

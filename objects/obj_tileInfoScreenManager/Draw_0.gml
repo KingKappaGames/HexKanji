@@ -48,6 +48,7 @@ if(menuTabOpen == "symbol") {
 		}
 	} else if(menuTabOpen == "romaji") {
 		var _romajiCount = array_length(romaji);
+		draw_text_transformed(x + 690, y - tileSize / 2 + 22, "* means On reading!", .5, .6, 0); //note to the side about * readings
 		for(var _i = _romajiCount - 1; _i > -1; _i--) {
 			draw_text_transformed(x, y - 60 * (_romajiCount / 2) + 60 * _i, romaji[_i], .7, .7, 0);
 		}

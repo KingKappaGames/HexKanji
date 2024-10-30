@@ -1,0 +1,1 @@
+displayGalleryMode = 1 - displayGalleryMode;
