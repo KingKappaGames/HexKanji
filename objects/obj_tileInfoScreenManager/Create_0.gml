@@ -1,5 +1,6 @@
 global.movementLocked = 1;
 
+manager = global.manager;
 tileSize = global.tileGapGeneral;
 tileX = 0;
 tileY = 0;
@@ -17,6 +18,9 @@ optionHovering = -1; // highlight and pass this option when making symbol guess
 difficulty = irandom(3); // jplt levels?
 description = "No description now.";
 verbType = "not implemented"; // ichidan, godan
+examples = []; // array of all the sentence indexs that contain this word (can be hundreds by the way...)
+
+exampleSentenceCurrentIndex = 0;
 
 
 
@@ -31,4 +35,5 @@ initializeInfoScreen = function(xTile, yTile) {
 	meaning = _data[3];
 	difficulty = _data[4];
 	description = _data[5];
+	examples = _data[6];
 }

@@ -15,3 +15,12 @@ if(mouse_check_button_released(mb_left)) {
 		menuTabOpen = menuTabList[optionHovering];
 	}
 }
+
+if(menuTabOpen == "example") {
+	if(keyboard_check_released(vk_left)) {
+		exampleSentenceCurrentIndex = clamp(exampleSentenceCurrentIndex - 1, 0, 99999);
+	}
+	if(keyboard_check_released(vk_right)) {
+		exampleSentenceCurrentIndex = clamp(exampleSentenceCurrentIndex + 1, 0, array_length(manager.totalSentenceCollectionArray));
+	}
+}

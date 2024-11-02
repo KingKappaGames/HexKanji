@@ -28,6 +28,7 @@
   ],
   "IncludedFiles":[
     {"$GMIncludedFile":"","%Name":"ARIALUNI.TTF","CopyToMask":-1,"filePath":"datafiles","name":"ARIALUNI.TTF","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+    {"$GMIncludedFile":"","%Name":"kanjiSentenceDump.txt","CopyToMask":-1,"filePath":"datafiles","name":"kanjiSentenceDump.txt","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"theGovSet.TXT","CopyToMask":-1,"filePath":"datafiles","name":"theGovSet.TXT","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
   ],
   "isEcma":false,

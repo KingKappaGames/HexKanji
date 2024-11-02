@@ -1,3 +1,5 @@
+/*
+
 var _line = 1;
 var _file = file_text_open_read("kanjiDataNoBrackets.txt");
 var _wordDump = file_text_open_write("kanjiDump.TXT");
@@ -152,5 +154,3 @@ for(var _i = 0; _i < _kanjiCount; _i++) {
 
 file_text_close(_wordDump);
 file_text_close(_file);
-
-//IT'S almost working!!! It now needs each category formatted... I need to go through each data type and break the large lists of entries for say meanings into actual lists and put quotes around each entry so that all entries can be non parsed... I think after those two things it will boot to the game ! Maybe I should find parenthesis within pronunciations and capitalize them? Later!

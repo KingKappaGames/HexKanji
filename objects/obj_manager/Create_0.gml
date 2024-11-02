@@ -8,11 +8,12 @@ x = 2100;
 y = 2100;
 
 var _dictionary = file_text_open_write("wordDictionary.txt");
-file_text_write_string(_dictionary, "");
+file_text_write_string(_dictionary, ""); // clear word data from file before rebuilding
 file_text_close(_dictionary);
 
 totalWordCount = 0;
 totalWordCollectionArray = [];
+totalSentenceCollectionArray = []; //this will be a 2d array of all sentences and in the sub arrays the data for each sentence. Then the word collections will simply store index references to the sentences that they relate to and refer back via that
 
 #region tile sizes and map size
 global.tileGapHorizontal = 200;
@@ -213,11 +214,26 @@ getWordTextFromDictionary = function(wordIndex) {
 	return _wordData;
 }
 
+getSentenceTextFromDictionary = function(sentenceIndex) {
+	var _collectionRead = file_text_open_read("wordDictionary.txt");
+	
+	repeat(sentenceIndex - 1) {
+		file_text_readln(_collectionRead);
+		if(file_text_eof(_collectionRead)) {
+			show_error($"You have requested a sentence with an index greater than the total sentence count! Monka. Index: {sentenceIndex}", true);
+		}
+	}
+	var _sentenceData = file_text_readln(_collectionRead);
+	closeFile(_collectionRead);
+	
+	return _sentenceData;
+}
+
 parseWordTextToArray = function(wordText) {
 	//parse the text to arrays and text and reals
 	var _wordDataArr = [];
 	
-	var _charCount = string_length(wordText);
+	var _charCount = string_length(wordText) - 1; // you have to cut off the new line character at the end with this -1
 	var _target = _wordDataArr; // set the target to sub arrays as they are created
 	var _chunkStartPos = 1; // the beginning of this piece of data in the string
 	var _forceQuotes = false;
@@ -254,8 +270,54 @@ parseWordTextToArray = function(wordText) {
 		//show_debug_message($"End: {_wordDataArr}");
 	}
 	
+	array_push(_wordDataArr, array_create(0, 0)); // stick an array on the end for sentence ids
+	
 	//show_debug_message(_wordDataArr)
 	return _wordDataArr;
+}
+
+parseSentenceTextToArray = function(sentenceText) {
+	//parse the text to arrays and text and reals
+	var _sentenceDataArr = [];
+	
+	var _charCount = string_length(sentenceText) - 1; // you have to cut off the new line character at the end with this -1
+	var _target = _sentenceDataArr; // set the target to sub arrays as they are created
+	var _chunkStartPos = 1; // the beginning of this piece of data in the string
+	var _forceQuotes = false;
+	for(var _charI = 1; _charI <= _charCount; _charI++) {
+		//show_debug_message(_sentenceDataArr)
+		if(!_forceQuotes) {
+			if(string_char_at(sentenceText, _charI) == " " || _charI == _charCount) { // if text broken by SPACE or ending then block word within those spaces based on the chunk start pos and current value adjusted for character
+				array_push(_target, string_copy(sentenceText, _chunkStartPos, (_charI - _chunkStartPos) + (_charI == _charCount))); // push word pos back or forward but not if it's at the end because then it's not a character thing but a position thing and thus there's no character to adjust for...
+				_chunkStartPos = _charI + 1;
+			} else if(string_char_at(sentenceText, _charI) == "[") { // can only handle one array deep because it doesn't track history of ins and outs for targetting
+				_target = array_create(0, 0);
+				_charI += 1;
+				_chunkStartPos = _charI + 1; // if you find an array opener then jump the scan forward past the array and following space to the start of the first value and set new word start too, also set target to new array for this opener
+			} else if(string_char_at(sentenceText, _charI) == "]") {
+				array_push(_sentenceDataArr, _target); // before you close this array's construction add the set to the main set
+			
+				_target = _sentenceDataArr;
+				_charI += 1;
+				_chunkStartPos = _charI + 1;
+			} else if(string_char_at(sentenceText, _charI) == "\"") {
+				_forceQuotes = true;
+				_chunkStartPos = _charI + 1; // start the quote block and set beginning to first quoted character
+			}
+			
+		} else {
+			if(string_char_at(sentenceText, _charI) == "\"") {
+				_forceQuotes = false;
+				array_push(_target, string_copy(sentenceText, _chunkStartPos, (_charI - _chunkStartPos))); // push word pos back or forward but not if it's at the end because then it's not a character thing but a position thing and thus there's no character to adjust for...
+				_charI++;
+				_chunkStartPos = _charI + 1;
+			}
+		}
+		
+		//show_debug_message($"End: {_wordDataArr}");
+	}
+
+	return _sentenceDataArr;
 }
 
 ///@desc Returns an info array of the values for a word
@@ -273,9 +335,34 @@ getWordData = function(word = irandom(totalWordCount - 1)) {
 
 loadAllWordsFromFileToDataCollection = function() {
 	totalWordCollectionArray = []; // clear data going in right? Maybe make function that simply adds word data from a pack to the total but to be fair that's what the text dictionary already does... Hm... Maybe it should be remade so that the text packs just add their data collections to the list and don't bother adding the text in the files itself... In fact now that I'm saying that it seems obvious... Damn
+	var _collectionRead = getDictRead();
+	
 	for(var _wordI = 1; _wordI <= totalWordCount; _wordI++) {
-		array_push(totalWordCollectionArray, parseWordTextToArray(getWordTextFromDictionary(_wordI)));
-		//show_debug_message(totalWordCollectionArray[array_length(totalWordCollectionArray) - 1])
+		array_push(totalWordCollectionArray, parseWordTextToArray(file_text_readln(_collectionRead)));
+	}
+	
+	file_text_close(_collectionRead);
+}
+
+loadAllSentencesFromFileToDataCollection = function() {
+	totalSentenceCollectionArray = []; // clear data going in right? Maybe make function that simply adds word data from a pack to the total but to be fair that's what the text dictionary already does... Hm... Maybe it should be remade so that the text packs just add their data collections to the list and don't bother adding the text in the files itself... In fact now that I'm saying that it seems obvious... Damn
+	var _collectionRead = file_text_open_read("kanjiSentenceDump.txt");
+	
+	for(var _sentenceI = 1; !file_text_eof(_collectionRead); _sentenceI++) {
+		// read the sentence from the file line by line, then with each step do the data parsing instead of restepping to that place in the file every new line. Idiotic to do 10000 steps to 10000 lines jesus
+		array_push(totalSentenceCollectionArray, parseSentenceTextToArray(file_text_readln(_collectionRead)));
+	}
+	
+	file_text_close(_collectionRead);
+}
+
+matchWordsWithSentences = function() {
+	for(var _i = array_length(totalWordCollectionArray) - 1; _i > -1; _i--) {
+		for(var _sentI = array_length(totalSentenceCollectionArray) - 1; _sentI > -1; _sentI--) {
+			if(array_contains(totalSentenceCollectionArray[_sentI][2], totalWordCollectionArray[_i][0])) { // if word kanji contained in sentence kanji
+				array_push(totalWordCollectionArray[_i][6], _sentI); // add sentence index to word's sentences array
+			}
+		}
 	}
 }
 
@@ -299,5 +386,8 @@ closeFile = function(fileId) {
 addWordSet("theGovSet.TXT");
 
 loadAllWordsFromFileToDataCollection();
+loadAllSentencesFromFileToDataCollection();
+
+matchWordsWithSentences();
 
 setTileGrid(0, 0, 0, 200, 200, 200, 200);
