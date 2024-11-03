@@ -40,22 +40,26 @@ if(menuTabOpen == "symbol") {
 	} else if(menuTabOpen == "difficulty") {
 		draw_text_transformed(x, y, difficulty, 4, 4, 0);
 	} else if(menuTabOpen == "example") {
-		var _sentenceData = manager.totalSentenceCollectionList[| examples[exampleSentenceCurrentIndex]];
-		var _lineEnd = 1;
-		var _lineStart = 1;
-		var _verticalSteps = 0;
+		if(array_length(examples) != 0) {
+			var _sentenceData = manager.totalSentenceCollectionList[| examples[exampleSentenceCurrentIndex]];
+			var _lineEnd = 1;
+			var _lineStart = 1;
+			var _verticalSteps = 0;
 		
-		while(_lineEnd < string_length(_sentenceData[0])) { // cant split kanji with no spaces for string ext...
-			_lineEnd += 12; // kanji per line
-	        draw_text_transformed(x, y - tileSize * .8 + 41 * _verticalSteps, string_copy(_sentenceData[0], _lineStart, _lineEnd - _lineStart), .45, .45, 0);
-	        _verticalSteps++;
-	        _lineStart = _lineEnd;
+			while(_lineEnd < string_length(_sentenceData[0])) { // cant split kanji with no spaces for string ext...
+				_lineEnd += 12; // kanji per line
+		        draw_text_transformed(x, y - tileSize * .8 + 41 * _verticalSteps, string_copy(_sentenceData[0], _lineStart, _lineEnd - _lineStart), .45, .45, 0);
+		        _verticalSteps++;
+		        _lineStart = _lineEnd;
 			
-	    }
-		draw_text_ext_transformed(x, y + tileSize * .24, _sentenceData[1], 80, tileSize * 7.2, .4, .4, 0);
-		draw_text_ext_transformed(x, y + tileSize * 1.18, _sentenceData[4], 80, tileSize * 3, .7, .7, 0);
+		    }
+			draw_text_ext_transformed(x, y + tileSize * .24, _sentenceData[1], 80, tileSize * 7.2, .4, .4, 0);
+			draw_text_ext_transformed(x, y + tileSize * 1.18, _sentenceData[4], 80, tileSize * 3, .7, .7, 0);
 		
-		draw_text_transformed(x, y + tileSize, "Arrow keys to change example", .35, .35, 0);
+			draw_text_transformed(x, y + tileSize, "Arrow keys to change example", .35, .35, 0);
+		} else {
+			draw_text_transformed(x, y, "13000\n example sentences\nand not one\n has this kanji!", .8, .8, 0);
+		}
 	} else if(menuTabOpen == "meaning") {
 		var _meaningCount = array_length(meaning);
 		for(var _i = _meaningCount - 1; _i > -1; _i--) {

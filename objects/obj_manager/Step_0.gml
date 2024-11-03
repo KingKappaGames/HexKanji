@@ -1,3 +1,32 @@
+var _string = string_digits(keyboard_lastchar);
+if(_string != "") {
+	var _numChange = real(_string);
+	if(_numChange > 0 && _numChange < 8) {
+		difficultyChangeDisplayTimer = difficultyChangeTextFadeTime;
+		if(difficultyGeneratorData[_numChange - 1] == 0) {
+			difficultyGeneratorData[_numChange - 1] = _numChange;
+		} else {
+			difficultyGeneratorData[_numChange - 1] = 0;
+		}
+		difficultyChangedSinceGen = !array_equals(difficultyGeneratorData, difficultyGeneratorPreviousData);
+	}
+	keyboard_lastchar = "";
+}
+
+if(difficultyChangeDisplayTimer > 0) {
+	difficultyChangeDisplayTimer--;
+}
+
+if(keyboard_check_released(vk_alt)) {
+	if(difficultyGeneratorData != [0, 0, 0, 0, 0, 0, 0]) {
+		difficultyGeneratorPreviousData = variable_clone(difficultyGeneratorData);
+		difficultyChangedSinceGen = false;
+		setTileGrid(0, 0, 0, 80, 60, 200, 200, difficultyGeneratorData);
+	} else {
+		audio_play_sound(snd_wrongDing, 10, 0);
+	}
+}
+
 if(mouse_check_button_released(mb_left)) {
 	if(moving == 0 && global.movementLocked == 0) {
 		if(mouse_x > 0 && mouse_x < tileMapWidth && mouse_y > 0 && mouse_y < tileMapHeight) {

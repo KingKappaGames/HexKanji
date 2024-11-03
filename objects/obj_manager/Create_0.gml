@@ -4,6 +4,12 @@ global.manager = id;
 global.movementLocked = 0;
 displayGalleryMode = false; // no quizes and shows the meaning and romaji on the tile by default
 
+difficultyGeneratorData = [1, 2, 3, 4, 5, 6, 7];
+difficultyChangedSinceGen = false;
+difficultyGeneratorPreviousData = [1, 2, 3, 4, 5, 6, 7];
+difficultyChangeDisplayTimer = 0;
+#macro difficultyChangeTextFadeTime 300
+
 x = 2100;
 y = 2100;
 
@@ -45,7 +51,7 @@ moveSpeed = 7;
 
 updateSurfaceNextFrame = 1;
 
-setTileGrid = function(tileSet, sorting, clumping, mapWidth, mapHeight, tileWidth, tileHeight) {
+setTileGrid = function(tileSet, sorting, clumping, mapWidth, mapHeight, tileWidth, tileHeight, difficultyIncludeArray = 1) {
 	// tileSet can a genre, 
 	
 	tileGapHorizontal = tileWidth;
@@ -83,8 +89,10 @@ setTileGrid = function(tileSet, sorting, clumping, mapWidth, mapHeight, tileWidt
 					//reset tile attempt... there must be a better way to get tile values like this than just randomly grabbing until it fufills all options...
 				}
 			}*/
-			while(totalWordCollectionList[| _wordIndex][4] > 2) {
-				_wordIndex = irandom(_wordCount - 1);
+			if(is_array(difficultyIncludeArray)) {
+				while(!array_contains(difficultyIncludeArray, totalWordCollectionList[| _wordIndex][4])) {
+					_wordIndex = irandom(_wordCount - 1);
+				}
 			}
 			tiles[_x, _y] = getWordData(_wordIndex); // tile get from style of request
 		}
@@ -395,4 +403,4 @@ loadAllSentencesFromFileToDataCollection("kanjiSentenceDump.txt");
 
 //this should be setting the collections to empty preinit arrays, then with all desired files adding directly from those files into the arrays (vs concat to dict file then reading..WHY) then trimming the arrays.
 
-setTileGrid(0, 0, 0, 200, 200, 200, 200);
+setTileGrid(0, 0, 0, 30, 30, 200, 200);
