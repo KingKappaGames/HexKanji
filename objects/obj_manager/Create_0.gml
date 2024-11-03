@@ -11,9 +11,8 @@ var _dictionary = file_text_open_write("wordDictionary.txt");
 file_text_write_string(_dictionary, ""); // clear word data from file before rebuilding
 file_text_close(_dictionary);
 
-totalWordCount = 0;
-totalWordCollectionArray = [];
-totalSentenceCollectionArray = []; //this will be a 2d array of all sentences and in the sub arrays the data for each sentence. Then the word collections will simply store index references to the sentences that they relate to and refer back via that
+totalWordCollectionList = ds_list_create(); // preload the arrays to a theoretical max size...
+totalSentenceCollectionList = ds_list_create(); //this will be a 2d array of all sentences and in the sub arrays the data for each sentence. Then the word collections will simply store index references to the sentences that they relate to and refer back via that
 
 #region tile sizes and map size
 global.tileGapHorizontal = 200;
@@ -72,19 +71,20 @@ setTileGrid = function(tileSet, sorting, clumping, mapWidth, mapHeight, tileWidt
 	    tiles[i] = array_create(mapHeight, 0);
 	}
 
+	var _wordCount = ds_list_size(totalWordCollectionList);
 	for(var _x = 0; _x < mapWidth; _x++) {
 		for(var _y = 0; _y < mapHeight; _y++) {
-			var _wordIndex = irandom(totalWordCount - 1);
+			var _wordIndex = irandom(_wordCount - 1);
 			var _filterValue = 1;
 			/*with(obj_filter) {
 				var _dist = point_distance(tileX, tileY, _x, _y) / tileRadius;
-				_filterValue *= other.totalWordCollectionArray[_wordIndex][4] / 7;
+				_filterValue *= other.totalWordCollectionList[| _wordIndex][4] / 7;
 				if(_filterValue < 1 - _dist) { // fail condition
 					//reset tile attempt... there must be a better way to get tile values like this than just randomly grabbing until it fufills all options...
 				}
 			}*/
-			while(totalWordCollectionArray[_wordIndex][4] > 2) {
-				_wordIndex = irandom(totalWordCount - 1);
+			while(totalWordCollectionList[| _wordIndex][4] > 2) {
+				_wordIndex = irandom(_wordCount - 1);
 			}
 			tiles[_x, _y] = getWordData(_wordIndex); // tile get from style of request
 		}
@@ -183,6 +183,7 @@ startTileInfoScreen = function() {
 #endregion
 
 #region word packs and file stuff
+///@deprecated
 ///@desc This function takes a provided file adress and copies it's contents to the top of the word list
 addWordSet = function(packURL) {
 	var _packRead = file_text_open_read(packURL);
@@ -192,7 +193,6 @@ addWordSet = function(packURL) {
 		file_text_write_string(_dictionary, file_text_read_string(_packRead));  
 		file_text_writeln(_dictionary);
 		file_text_readln(_packRead);
-		totalWordCount++;
 	}
 	
 	closeFile(_dictionary);
@@ -270,7 +270,7 @@ parseWordTextToArray = function(wordText) {
 		//show_debug_message($"End: {_wordDataArr}");
 	}
 	
-	array_push(_wordDataArr, array_create(0, 0)); // stick an array on the end for sentence ids
+	//array_push(_wordDataArr, array_create(0, 0)); // stick an array on the end for sentence ids, (NOT ANYMORE, switching to local sorting)
 	
 	//show_debug_message(_wordDataArr)
 	return _wordDataArr;
@@ -322,51 +322,58 @@ parseSentenceTextToArray = function(sentenceText) {
 
 ///@desc Returns an info array of the values for a word
 ///@param word This can either be the word text as a string or an index as a real (:
-getWordData = function(word = irandom(totalWordCount - 1)) {	
+getWordData = function(word = -1) {	
+	if(word == -1) {
+		word = irandom(ds_list_size(totalWordCollectionList) - 1);
+	}
+	
 	if(is_string(word)) {
 		return parseWordTextToArray(word);
 	}
 	
 	if(is_real(word)) {
-		return totalWordCollectionArray[word];
+		return totalWordCollectionList[| word];
 		//return parseWordTextToArray(getWordTextFromDictionary(word)); // if you want to grab one word from the text file...
 	}
 }
 
-loadAllWordsFromFileToDataCollection = function() {
-	totalWordCollectionArray = []; // clear data going in right? Maybe make function that simply adds word data from a pack to the total but to be fair that's what the text dictionary already does... Hm... Maybe it should be remade so that the text packs just add their data collections to the list and don't bother adding the text in the files itself... In fact now that I'm saying that it seems obvious... Damn
-	var _collectionRead = getDictRead();
+///@desc Adds the given files data into the data set directly, adding onto the initially created set
+loadAllWordsFromFileToDataCollection = function(fileURL) {
+	var _collectionRead = file_text_open_read(fileURL);
 	
-	for(var _wordI = 1; _wordI <= totalWordCount; _wordI++) {
-		array_push(totalWordCollectionArray, parseWordTextToArray(file_text_readln(_collectionRead)));
+	while(!file_text_eof(_collectionRead)) {
+		ds_list_add(totalWordCollectionList, parseWordTextToArray(file_text_readln(_collectionRead)));
 	}
 	
 	file_text_close(_collectionRead);
 }
 
-loadAllSentencesFromFileToDataCollection = function() {
-	totalSentenceCollectionArray = []; // clear data going in right? Maybe make function that simply adds word data from a pack to the total but to be fair that's what the text dictionary already does... Hm... Maybe it should be remade so that the text packs just add their data collections to the list and don't bother adding the text in the files itself... In fact now that I'm saying that it seems obvious... Damn
-	var _collectionRead = file_text_open_read("kanjiSentenceDump.txt");
+loadAllSentencesFromFileToDataCollection = function(fileURL) {
+	var _collectionRead = file_text_open_read(fileURL);
 	
-	for(var _sentenceI = 1; !file_text_eof(_collectionRead); _sentenceI++) {
-		// read the sentence from the file line by line, then with each step do the data parsing instead of restepping to that place in the file every new line. Idiotic to do 10000 steps to 10000 lines jesus
-		array_push(totalSentenceCollectionArray, parseSentenceTextToArray(file_text_readln(_collectionRead)));
+	while(!file_text_eof(_collectionRead)) {
+		ds_list_add(totalSentenceCollectionList, parseSentenceTextToArray(file_text_readln(_collectionRead)));
 	}
 	
 	file_text_close(_collectionRead);
 }
 
+///@deprecated
+///@desc This function goes through all the words in the game set and applies sentence index's to their data. However I've stopped doing it this way in favor of single instance checking when the user wants that item to avoid the upfront lag ~20 seconds. That's the word.
 matchWordsWithSentences = function() {
-	for(var _i = array_length(totalWordCollectionArray) - 1; _i > -1; _i--) {
-		for(var _sentI = array_length(totalSentenceCollectionArray) - 1; _sentI > -1; _sentI--) {
-			if(array_contains(totalSentenceCollectionArray[_sentI][2], totalWordCollectionArray[_i][0])) { // if word kanji contained in sentence kanji
-				array_push(totalWordCollectionArray[_i][6], _sentI); // add sentence index to word's sentences array
+	var _sentCount = ds_list_size(totalSentenceCollectionList); 
+	var _sentOffset = irandom(_sentCount - 1);
+	
+	for(var _i = ds_list_size(totalWordCollectionList) - 1; _i > -1; _i--) {
+		for(var _sentI = 0; _sentI < _sentCount; _sentI++) {
+			if(array_contains(totalSentenceCollectionList[| (_sentI + _sentOffset) % (_sentCount - 1)][2], totalWordCollectionList[| _i][0])) { // if word kanji contained in sentence kanji
+				array_push(totalWordCollectionList[| _i][6], (_sentI + _sentOffset) % (_sentCount - 1)); // add sentence index to word's sentences array
 			}
 		}
 	}
 }
 
-#region file managment scripts (open / close)
+#region file managment scripts (open / close) (The files should be being read directly to array, not transfered to a main file then read..........)
 getDictWrite = function() {
 	return file_text_open_append("wordDictionary.txt");
 }
@@ -383,11 +390,9 @@ closeFile = function(fileId) {
 
 //addWordSet("baseWords.txt");
 //addWordSet("terrariaWords.txt");
-addWordSet("theGovSet.TXT");
+loadAllWordsFromFileToDataCollection("theGovSet.TXT");
+loadAllSentencesFromFileToDataCollection("kanjiSentenceDump.txt");
 
-loadAllWordsFromFileToDataCollection();
-loadAllSentencesFromFileToDataCollection();
-
-matchWordsWithSentences();
+//this should be setting the collections to empty preinit arrays, then with all desired files adding directly from those files into the arrays (vs concat to dict file then reading..WHY) then trimming the arrays.
 
 setTileGrid(0, 0, 0, 200, 200, 200, 200);

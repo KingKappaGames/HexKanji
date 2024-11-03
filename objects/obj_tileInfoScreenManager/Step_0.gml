@@ -21,6 +21,6 @@ if(menuTabOpen == "example") {
 		exampleSentenceCurrentIndex = clamp(exampleSentenceCurrentIndex - 1, 0, 99999);
 	}
 	if(keyboard_check_released(vk_right)) {
-		exampleSentenceCurrentIndex = clamp(exampleSentenceCurrentIndex + 1, 0, array_length(manager.totalSentenceCollectionArray));
+		exampleSentenceCurrentIndex = clamp(exampleSentenceCurrentIndex + 1, 0, array_length(examples) - 1);
 	}
 }

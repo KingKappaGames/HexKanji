@@ -40,7 +40,7 @@ if(menuTabOpen == "symbol") {
 	} else if(menuTabOpen == "difficulty") {
 		draw_text_transformed(x, y, difficulty, 4, 4, 0);
 	} else if(menuTabOpen == "example") {
-		var _sentenceData = manager.totalSentenceCollectionArray[examples[exampleSentenceCurrentIndex]];
+		var _sentenceData = manager.totalSentenceCollectionList[| examples[exampleSentenceCurrentIndex]];
 		var _lineEnd = 1;
 		var _lineStart = 1;
 		var _verticalSteps = 0;
