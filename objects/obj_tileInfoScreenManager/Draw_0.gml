@@ -41,8 +41,8 @@ if(menuTabOpen == "symbol") {
 		draw_text_transformed(x, y, difficulty, 4, 4, 0);
 	} else if(menuTabOpen == "example") {
 		var _sentenceData = manager.totalSentenceCollectionArray[examples[exampleSentenceCurrentIndex]];
-		var _lineEnd = 0;
-		var _lineStart = 0;
+		var _lineEnd = 1;
+		var _lineStart = 1;
 		var _verticalSteps = 0;
 		
 		while(_lineEnd < string_length(_sentenceData[0])) { // cant split kanji with no spaces for string ext...
@@ -56,8 +56,6 @@ if(menuTabOpen == "symbol") {
 		draw_text_ext_transformed(x, y + tileSize * 1.18, _sentenceData[4], 80, tileSize * 3, .7, .7, 0);
 		
 		draw_text_transformed(x, y + tileSize, "Arrow keys to change example", .35, .35, 0);
-		draw_text_transformed(x - 80, y + tileSize * 1.22, "<-", .6, .6, 0);
-		draw_text_transformed(x + 80, y + tileSize * 1.22, "->", .6, .6, 0);
 	} else if(menuTabOpen == "meaning") {
 		var _meaningCount = array_length(meaning);
 		for(var _i = _meaningCount - 1; _i > -1; _i--) {

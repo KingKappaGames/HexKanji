@@ -113,7 +113,7 @@ drawLocalSurface = function() {
 		repeat(_drawVer) {
 			repeat(_drawHor) {
 				if(_x > -1 && _x < tileMapWidth / tileGapHorizontal && _y > -1 && _y < tileMapHeight / tileGapVertical) {
-					var _col = make_color_rgb(0, irandom(128), irandom_range(128, 255));//choose(c_red, c_blue, c_green, c_purple, c_orange);
+					var _col = make_color_rgb(0, irandom_range(0, 128), irandom_range(128, 255));//choose(c_red, c_blue, c_green, c_purple, c_orange);
 					draw_rectangle_color(_x * tileGapHorizontal - _xCut - x % tileGapHorizontal, _y * tileGapVertical - _yCut - y % tileGapVertical, _x * tileGapHorizontal - _xCut + tileGapHorizontal - x % tileGapHorizontal, _y * tileGapVertical - _yCut + tileGapVertical - y % tileGapVertical, _col, _col, _col, _col, false);
 					draw_text_transformed((_x + .5) * tileGapHorizontal - _xCut - x % tileGapHorizontal, _y * tileGapVertical + tileGapVertical / 2 - _yCut - y % tileGapVertical, tiles[_x][_y][0], clamp(3 / string_length(tiles[_x][_y][0]), .3, .75), clamp(4 / string_length(tiles[_x][_y][0]), .3, .75), 0);
 					if(displayGalleryMode) {
