@@ -10,7 +10,7 @@ optionHovering = floor((_mouseDir / 360) * menuTabCount);
 	
 if(mouse_check_button_released(mb_left)) {
 	var _dist = point_distance(x, y, mouse_x, mouse_y);
-	if(_dist < tileSize * 2.25 && _dist > tileSize * 1.48) {
+	if(_dist < (infoWheelRadius + infoWheelEdgeThickness) && _dist > (infoWheelRadius)) { // from inner to outer edge
 		audio_play_sound(snd_correctDing, 0, 0);
 		menuTabOpen = menuTabList[optionHovering];
 	}

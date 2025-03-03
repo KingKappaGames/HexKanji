@@ -3,7 +3,7 @@ if(updateSurfaceNextFrame == 1) {
 	updateSurfaceNextFrame = 0;
 }
 
-draw_surface(getLocalSurface(), surfaceDrawX - surface_get_width(getLocalSurface()) / 2, surfaceDrawY - surface_get_height(getLocalSurface()) / 2);
+draw_surface(getLocalSurface(), surfaceDrawX - surface_get_width(getLocalSurface()) / 2 - tileGapHorizontal / 2, surfaceDrawY - surface_get_height(getLocalSurface()) / 2 - tileGapVertical / 2); // idk why I need to add half horizontal, something to do with the surface size
 
 draw_set_color(c_black);
 draw_circle(x, y, 5, true);

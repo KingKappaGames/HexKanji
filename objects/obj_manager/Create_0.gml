@@ -1,4 +1,5 @@
 randomize();
+draw_set_circle_precision(64); // high prec boy
 
 global.manager = id;
 global.movementLocked = 0;
@@ -60,7 +61,7 @@ setTileGrid = function(tileSet, sorting, clumping, mapWidth, mapHeight, tileWidt
 	if(buffer_exists(localBuffer)) {
 		buffer_delete(localBuffer);
 	}
-	localBuffer = buffer_create(ceil(camera_get_view_width(view_camera[0]) / tileGapHorizontal) * ceil(camera_get_view_height(view_camera[0]) / tileGapVertical) * tileGapHorizontal * tileGapVertical * 9, buffer_fixed, 1);
+	localBuffer = buffer_create(ceil(camera_get_view_width(view_camera[0]) / tileGapHorizontal) * ceil(camera_get_view_height(view_camera[0]) / tileGapVertical) * tileGapHorizontal * tileGapVertical * 25, buffer_fixed, 1);
 	
 	tileMapWidth = tileGapHorizontal * mapWidth;
 	tileMapHeight = tileGapVertical * mapHeight;
@@ -108,13 +109,13 @@ drawLocalSurface = function() {
 		//draw event, called in draw!
 		surface_set_target(localSurface);
 		
-		var _x = round((x - surface_get_width(getLocalSurface()) / 2) / tileGapHorizontal);
-		var _y = round((y - surface_get_height(getLocalSurface()) / 2) / tileGapVertical);
+		var _x = floor((x - surface_get_width(getLocalSurface()) / 2) / tileGapHorizontal);
+		var _y = floor((y - surface_get_height(getLocalSurface()) / 2) / tileGapVertical);
 		var _xCut = _x * tileGapHorizontal;
 		var _yCut =	_y * tileGapVertical;
 		
-		var _drawHor = floor(surface_get_width(getLocalSurface()) / tileGapHorizontal);
-		var _drawVer = floor(surface_get_height(getLocalSurface()) / tileGapHorizontal);
+		var _drawHor = round(surface_get_width(getLocalSurface()) / tileGapHorizontal);							
+		var _drawVer = round(surface_get_height(getLocalSurface()) / tileGapHorizontal);
 		
 		draw_set_halign(fa_center);
 		draw_set_valign(fa_middle);
@@ -151,7 +152,7 @@ makeLocalSurface = function(xCenter, yCenter) {
 		draw_clear_alpha(c_black, 1);
 		surface_reset_target();
 	} else {
-		localSurface = surface_create(ceil(camera_get_view_width(view_camera[0]) * 1.5 / tileGapHorizontal) * tileGapHorizontal, ceil(camera_get_view_height(view_camera[0]) * 1.5 / tileGapVertical) * tileGapVertical);
+		localSurface = surface_create(ceil(camera_get_view_width(view_camera[0]) * 2.5 / tileGapHorizontal) * tileGapHorizontal, ceil(camera_get_view_height(view_camera[0]) * 2.5 / tileGapVertical) * tileGapVertical);
 	}
 	
 	drawLocalSurface();
@@ -164,7 +165,7 @@ getLocalSurface = function() {
 	if(surface_exists(localSurface)) {
 		return localSurface;
 	} else {
-		localSurface = surface_create(ceil(camera_get_view_width(view_camera[0]) * 1.5 / tileGapHorizontal) * tileGapHorizontal, ceil(camera_get_view_height(view_camera[0]) * 1.5 / tileGapVertical) * tileGapVertical);
+		localSurface = surface_create(ceil(camera_get_view_width(view_camera[0]) * 2.5 / tileGapHorizontal) * tileGapHorizontal, ceil(camera_get_view_height(view_camera[0]) * 2.5 / tileGapVertical) * tileGapVertical);
 		buffer_set_surface(localBuffer, localSurface, 0);
 		return localSurface;
 	}
@@ -185,8 +186,8 @@ startTileInfoScreen = function() {
 	var _tileX = round(x / tileGapHorizontal);
 	var _tileY = round(y / tileGapVertical);
 	
-	var _quiz = instance_create_depth(_tileX * tileGapHorizontal, _tileY * tileGapVertical, -100, obj_tileInfoScreenManager); // maybe these should both be made into made quiz () ? idk
-	_quiz.initializeInfoScreen(_tileX, _tileY);
+	var _infoScreen = instance_create_depth(x, y, -100, obj_tileInfoScreenManager); // maybe these should both be made into made quiz () ? idk
+	_infoScreen.initializeInfoScreen(_tileX, _tileY);
 }
 #endregion
 
@@ -403,4 +404,4 @@ loadAllSentencesFromFileToDataCollection("kanjiSentenceDump.txt");
 
 //this should be setting the collections to empty preinit arrays, then with all desired files adding directly from those files into the arrays (vs concat to dict file then reading..WHY) then trimming the arrays.
 
-setTileGrid(0, 0, 0, 30, 30, 200, 200);
+setTileGrid(0, 0, 0, 40, 40, 200, 200);

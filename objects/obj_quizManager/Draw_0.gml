@@ -1,8 +1,8 @@
 draw_set_halign(fa_center);
 draw_set_valign(fa_middle);
 if(guessCurrentFormat != 0) {
-	script_drawCircleWidth(x, y, tileSize * 1.15, tileSize * .4, 24, c_black, 1);
-	script_drawCircleWidth(x, y, tileSize * 1.05, tileSize * .33, 24, c_dkgray, 1);
+	script_drawCircleWidth(x, y, tileSize * 1.15, tileSize * .4, 64, c_black, 1);
+	script_drawCircleWidth(x, y, tileSize * 1.05, tileSize * .33, 64, c_dkgray, 1);
 	var _offset = 90;
 	if(guessOptionCount == 2) {
 		_offset = 180;

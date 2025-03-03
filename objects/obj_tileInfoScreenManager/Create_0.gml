@@ -5,6 +5,9 @@ tileSize = global.tileGapGeneral;
 tileX = 0;
 tileY = 0;
 
+infoWheelRadius = room_width * .26;
+infoWheelEdgeThickness = room_width * .085;
+
 symbol = "H";
 meaning = "Dog";
 pronunciation = "Ee-nu"; // not a format because not answerable in a meaningful way and romaji already does this

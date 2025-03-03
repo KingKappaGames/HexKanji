@@ -18,7 +18,7 @@ if(difficultyChangeDisplayTimer > 0) {
 }
 
 if(keyboard_check_released(vk_alt)) {
-	if(difficultyGeneratorData != [0, 0, 0, 0, 0, 0, 0]) {
+	if(!array_equals(difficultyGeneratorData, [0, 0, 0, 0, 0, 0, 0])) {
 		difficultyGeneratorPreviousData = variable_clone(difficultyGeneratorData);
 		difficultyChangedSinceGen = false;
 		setTileGrid(0, 0, 0, 80, 60, 200, 200, difficultyGeneratorData);
