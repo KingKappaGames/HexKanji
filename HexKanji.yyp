@@ -44,6 +44,7 @@
     {"id":{"name":"obj_tileInfoScreenManager","path":"objects/obj_tileInfoScreenManager/obj_tileInfoScreenManager.yy",},},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
     {"id":{"name":"script_drawCircleWidth","path":"scripts/script_drawCircleWidth/script_drawCircleWidth.yy",},},
+    {"id":{"name":"script_getKanjiRubiPairs","path":"scripts/script_getKanjiRubiPairs/script_getKanjiRubiPairs.yy",},},
     {"id":{"name":"script_getSymbolInfo","path":"scripts/script_getSymbolInfo/script_getSymbolInfo.yy",},},
     {"id":{"name":"script_getTileData","path":"scripts/script_getTileData/script_getTileData.yy",},},
     {"id":{"name":"script_SetTileSize","path":"scripts/script_SetTileSize/script_SetTileSize.yy",},},

@@ -44,23 +44,41 @@ if(menuTabOpen == "symbol") {
 	} else if(menuTabOpen == "example") {
 		if(array_length(examples) != 0) {
 			var _sentenceData = manager.totalSentenceCollectionList[| examples[exampleSentenceCurrentIndex]];
+			
+			draw_set_halign(fa_left); // draw the kanji text with left align in order to do easier lining up
+			
+			var _drawLineSpacingVertical = 63;
+			
 			var _lineEnd = 1;
 			var _lineStart = 1;
 			var _verticalSteps = 0;
-		
 			var _scaleKanji = .5;
 			var _lineWidthKanji = round(7 / _scaleKanji);
-			while(_lineEnd < string_length(_sentenceData[0])) { // cant split kanji with no spaces for string ext...
+			var _kanjiTextLength = string_length(_sentenceData[0]);
+			var _kanjiDrawWidth = 85 * _scaleKanji;
+			while(_lineEnd < _kanjiTextLength) { // cant split kanji with no spaces for string ext...
 				_lineEnd += _lineWidthKanji; // kanji per line
-		        draw_text_transformed(x, y - infoWheelRadius * .51 + 42 * _verticalSteps, string_copy(_sentenceData[0], _lineStart, _lineEnd - _lineStart), _scaleKanji, _scaleKanji, 0);
+		        draw_text_transformed(x - (_lineWidthKanji / 2) * _kanjiDrawWidth, y - infoWheelRadius * .51 + _drawLineSpacingVertical * _verticalSteps, string_copy(_sentenceData[0], _lineStart, _lineEnd - _lineStart), _scaleKanji, _scaleKanji, 0);
 		        _verticalSteps++;
 		        _lineStart = _lineEnd;
-			
 		    }
+			
+			var _furiganaInfo = script_getKanjiRubiPairs(_sentenceData[3], _sentenceData[0]);
+			var _scaleFurigana = .275;
+			var _furiganaCount = array_length(_furiganaInfo);
+			var _furiganaCurrent = 0;
+			var _furiganaLine = 0;
+			for(var _fTextI = 0; _fTextI < _furiganaCount; _fTextI++) {
+				_furiganaCurrent = _furiganaInfo[_fTextI];
+				_furiganaLine = (_furiganaCurrent[0] - 1) div _lineWidthKanji; // this gives vertical / line depth
+				draw_text_transformed(x - (_lineWidthKanji / 2) * _kanjiDrawWidth + ((_furiganaCurrent[0] - 1) % _lineWidthKanji) * _kanjiDrawWidth, y - infoWheelRadius * .51 + _drawLineSpacingVertical * _furiganaLine - _drawLineSpacingVertical / 2, _furiganaCurrent[2], _scaleFurigana / clamp((string_length(_furiganaCurrent[2]) / 2) / (_furiganaCurrent[1] - _furiganaCurrent[0]), 1, 99), _scaleFurigana, 0);
+			}
+			
+			draw_set_halign(fa_center);
 			
 			var _scaleEnglish = .4;
 			var _lineWidthEnglish = (infoWheelRadius * 1.75) / _scaleEnglish; // this gets the width of the wheel but acounts for the text size since the width in GM doesn't use scale in it's calculations
-			draw_text_ext_transformed(x, y + infoWheelRadius * .27, _sentenceData[1], 80, _lineWidthEnglish, _scaleEnglish, _scaleEnglish, 0); // translated sentence
+			draw_text_ext_transformed(x, y + infoWheelRadius * .30, _sentenceData[1], 80, _lineWidthEnglish, _scaleEnglish, _scaleEnglish, 0); // translated sentence
 			
 			draw_text_transformed(x, y + infoWheelRadius * .89, _sentenceData[4], .7, .7, 0); // difficulty
 			draw_text_transformed(x, y + infoWheelRadius * .78, "Arrow keys to change example", .35, .35, 0); // arrow key guide text
